@@ -12,13 +12,13 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp
 public class TeleOP extends OpMode {
     private DcMotorEx leftFront, leftBack, rightFront, rightBack, intake, outtake, delivery1, delivery2;
+    private Servo duck, pully;
     private boolean direction, togglePrecision;
     private double factor;
     boolean currentB = false;
     boolean previousB = false;
     boolean currentRB = false;
     boolean previousRB = false;
-    private Servo claw, flicker, holder; //claw, flicker, holder
     boolean reverse;
     int reverseFactor;
     private BNO055IMU imu;
@@ -26,7 +26,6 @@ public class TeleOP extends OpMode {
     private double servo;
     double shooterPower = .80;
     boolean shotMode = false;
-    ElapsedTime timer = new ElapsedTime();
     boolean servoMoving = false;
     @Override
     public void init() {
@@ -82,31 +81,44 @@ public class TeleOP extends OpMode {
 
     @Override
     public void loop() {
-
-        //Increasing the power gradually
-        //int power = (DcMotorSimple) arm.getPower();
-
-
         if(gamepad1.dpad_up)
             reverse = !reverse;
         if(gamepad1.left_stick_button)
             togglePrecision = !togglePrecision;
-        if(gamepad1.a)
+        if(gamepad1.a) {
             intake.setPower(-1);
-        else
-            intake.setPower(0);
-        if(gamepad1.right_bumper) {
             delivery1.setPower(1);
             delivery2.setPower(-1);
         }
         else {
+            intake.setPower(0);
             delivery1.setPower(0);
             delivery2.setPower(0);
         }
-        if(gamepad1.b)
+        if(gamepad1.a) {
+            intake.setPower(1);
+            delivery1.setPower(-1);
+            delivery2.setPower(1);
+        }
+        else {
+            intake.setPower(0);
+            delivery1.setPower(0);
+            delivery2.setPower(0);
+        }
+        if(gamepad1.right_bumper)
             outtake.setPower(1);
         else
             outtake.setPower(0);
+        if(gamepad1.left_bumper)
+            outtake.setPower(-1);
+        else
+            outtake.setPower(0);
+        if(gamepad1.y)
+            pully.setPosition(1);
+        else
+            pully.setPosition();
+
+
         telemetry.addData("Precision",togglePrecision);
         //toggles precision mode if the right stick button is pressed
 
@@ -120,9 +132,9 @@ public class TeleOP extends OpMode {
         double powerAngle = stickAngle - (Math.PI / 4); // conversion for correct power values
         double rightX = gamepad1.right_stick_x; // right stick x axis controls turning
         final double leftFrontPower = Range.clip(x * Math.cos(powerAngle)- rightX, -1.0, 1.0);
-        final double leftRearPower = -Range.clip(x * Math.sin(powerAngle) - rightX, -1.0, 1.0);
+        final double leftRearPower = Range.clip(x * Math.sin(powerAngle) - rightX, -1.0, 1.0);
         final double rightFrontPower = Range.clip(x * Math.sin(powerAngle) + rightX, -1.0, 1.0);
-        final double rightRearPower = -Range.clip(x * Math.cos(powerAngle) +rightX, -1.0, 1.0);
+        final double rightRearPower = Range.clip(x * Math.cos(powerAngle) +rightX, -1.0, 1.0);
 
 
 
@@ -148,11 +160,6 @@ public class TeleOP extends OpMode {
         //Incrementing the power by 0.0 EVERY TIME you call this function
 // for jon in jon on jon
 
-        //Updating the power of the motors
-       /* arm.setPower(power);
-        shooter.setPower(power);
-        intake.setPower(power);
-        transfer.setPower(power); */
 
         //Reset the intake and transfer encoders
 
