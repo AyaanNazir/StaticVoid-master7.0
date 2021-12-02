@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous
-public class Auto extends LinearOpMode{
+public class BlueAuto extends LinearOpMode{
     private DcMotorEx leftFront, leftBack, rightFront, rightBack, intake, outtake, delivery1, delivery2;
     private Servo duck, pully;
     private DcMotorEx[] motors;
@@ -19,15 +19,26 @@ public class Auto extends LinearOpMode{
     @Override
     public void runOpMode() throws InterruptedException {
         initialize();
-        duck.setPosition(-1);
-        drive(1, 100);
-        strafe(-1, 700);
+        duck.setPosition(1);
+        strafe(-1, 200);
+        drive(-.8, 650);
         intakeBox();
-        drive(.5, 650);
-        strafe(-1, 100);
+        duck.setPosition(0.5);
+        strafe(-1, 500);
+        pully.setPosition(1);
+
+        /*duck.setPosition(-1);
+        drive(1, 300);
+        strafe(1, 600);
+        raisePully();
+        strafe(-1, 500);
+        turn(1, 1000);
+        dropPully();
+        drive(1, 500);
         duck.setPosition(0);
+         */
     }
-//sebby is stronk
+    //sebby is stronk
     public void initialize() {
         leftFront = (DcMotorEx) hardwareMap.dcMotor.get("FL");
         leftBack = (DcMotorEx) hardwareMap.dcMotor.get("BL");
@@ -38,7 +49,7 @@ public class Auto extends LinearOpMode{
         delivery2 = (DcMotorEx) hardwareMap.dcMotor.get("delivery2");
         outtake = (DcMotorEx) hardwareMap.dcMotor.get("outtake");
         duck = (Servo) hardwareMap.get("duck");
-        //pully = (Servo) hardwareMap.get("pully");
+        pully = (Servo) hardwareMap.get("pully");
 
         motors = new DcMotorEx[]{leftFront, leftBack, rightFront, rightBack};
 
@@ -129,20 +140,36 @@ public class Auto extends LinearOpMode{
     public void raisePully() throws InterruptedException {
         timer = new ElapsedTime();
         outtake.setPower(1);
-        while(timer.milliseconds() <= 2500)
-        {
-            if (!opModeIsActive()) {
-                throw new InterruptedException();
-            }
-        }
-        outtake.setPower(-1);
-        while(timer.milliseconds() <= 5000)
+        while(timer.milliseconds() <= 1500)
         {
             if (!opModeIsActive()) {
                 throw new InterruptedException();
             }
         }
         outtake.setPower(0);
+        pully.setPosition(0);
+        while(timer.milliseconds() <= 2500)
+        {
+            if (!opModeIsActive()) {
+                throw new InterruptedException();
+            }
+        }
+    }
 
+    public void dropPully() throws InterruptedException {
+        timer = new ElapsedTime();
+        pully.setPosition(1);
+        while(timer.milliseconds() <= 1000)
+            if (!opModeIsActive()) {
+                throw new InterruptedException();
+            }
+        outtake.setPower(-1);
+        while(timer.milliseconds() <= 2000)
+        {
+            if (!opModeIsActive()) {
+                throw new InterruptedException();
+            }
+        }
+        outtake.setPower(0);
     }
 }

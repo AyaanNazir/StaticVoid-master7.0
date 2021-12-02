@@ -13,20 +13,9 @@ import com.qualcomm.robotcore.util.Range;
 public class TeleOP extends OpMode {
     private DcMotorEx leftFront, leftBack, rightFront, rightBack, intake, outtake, delivery1, delivery2;
     private Servo duck, pully;
-    private boolean direction, togglePrecision;
+    private boolean direction, togglePrecision, reverse;
     private double factor;
-    boolean currentB = false;
-    boolean previousB = false;
-    boolean currentRB = false;
-    boolean previousRB = false;
-    boolean reverse;
-    int reverseFactor;
     private BNO055IMU imu;
-    private ElapsedTime runtime;
-    private double servo;
-    double shooterPower = .80;
-    boolean shotMode = false;
-    boolean servoMoving = false;
     @Override
     public void init() {
         //Maps all the variables to its respective hardware
@@ -38,6 +27,8 @@ public class TeleOP extends OpMode {
         delivery1 = (DcMotorEx) hardwareMap.dcMotor.get("delivery1");
         delivery2 = (DcMotorEx) hardwareMap.dcMotor.get("delivery2");
         outtake = (DcMotorEx) hardwareMap.dcMotor.get("outtake");
+        duck = (Servo) hardwareMap.get("duck");
+        pully = (Servo) hardwareMap.get("pully");
         //Initialize all the hardware to use Encoders
         leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -74,28 +65,24 @@ public class TeleOP extends OpMode {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imu.initialize(parameters);
-        runtime = new ElapsedTime();
+
+        togglePrecision = false;
         reverse = false;
     }
 
 
     @Override
     public void loop() {
-        if(gamepad1.dpad_up)
-            reverse = !reverse;
-        if(gamepad1.left_stick_button)
+        if(gamepad1.start)
             togglePrecision = !togglePrecision;
-        if(gamepad1.a) {
+        if(gamepad1.back)
+            reverse = !reverse;
+        if(gamepad1.b) {
             intake.setPower(-1);
             delivery1.setPower(1);
             delivery2.setPower(-1);
         }
-        else {
-            intake.setPower(0);
-            delivery1.setPower(0);
-            delivery2.setPower(0);
-        }
-        if(gamepad1.a) {
+        else if(gamepad1.a) {
             intake.setPower(1);
             delivery1.setPower(-1);
             delivery2.setPower(1);
@@ -105,21 +92,52 @@ public class TeleOP extends OpMode {
             delivery1.setPower(0);
             delivery2.setPower(0);
         }
-        if(gamepad1.right_bumper)
+        if(gamepad1.right_trigger > .49)
             outtake.setPower(1);
-        else
-            outtake.setPower(0);
-        if(gamepad1.left_bumper)
+        else if(gamepad1.left_trigger > .49)
             outtake.setPower(-1);
         else
             outtake.setPower(0);
-        if(gamepad1.y)
-            pully.setPosition(1);
+        if(gamepad1.right_bumper)
+            pully.setPosition(0);
         else
-            pully.setPosition();
+            pully.setPosition(1);
+        if(gamepad1.x && !reverse)
+            duck.setPosition(1);
+        else if(gamepad1.x)
+            duck.setPosition(-1);
+        else
+            duck.setPosition(.5);
+
+        if(gamepad2.b) {
+            intake.setPower(-1);
+            delivery1.setPower(1);
+            delivery2.setPower(-1);
+        }
+        else if(gamepad2.a) {
+            intake.setPower(1);
+            delivery1.setPower(-1);
+            delivery2.setPower(1);
+        }
+        else {
+            intake.setPower(0);
+            delivery1.setPower(0);
+            delivery2.setPower(0);
+        }
+        if(gamepad2.right_trigger > .49)
+            outtake.setPower(1);
+        else if(gamepad2.left_trigger > .49)
+            outtake.setPower(-1);
+        else
+            outtake.setPower(0);
+        if(gamepad2.right_bumper)
+            pully.setPosition(0);
+        else
+            pully.setPosition(1);
 
 
         telemetry.addData("Precision",togglePrecision);
+        telemetry.addData("Reverse",reverse);
         //toggles precision mode if the right stick button is pressed
 
 
@@ -128,7 +146,7 @@ public class TeleOP extends OpMode {
 
         // Do not mess with this, if it works, it works
         double x = Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y);
-        double stickAngle = Math.atan2(direction ? -gamepad1.left_stick_y : gamepad1.left_stick_y, direction ? -gamepad1.left_stick_x : gamepad1.left_stick_x); // desired robot angle from the angle of stick
+        double stickAngle = Math.atan2(direction ? -gamepad1.left_stick_y : gamepad1.left_stick_y, direction ? gamepad1.left_stick_x : -gamepad1.left_stick_x); // desired robot angle from the angle of stick
         double powerAngle = stickAngle - (Math.PI / 4); // conversion for correct power values
         double rightX = gamepad1.right_stick_x; // right stick x axis controls turning
         final double leftFrontPower = Range.clip(x * Math.cos(powerAngle)- rightX, -1.0, 1.0);
