@@ -103,42 +103,19 @@ public class TeleOP extends OpMode {
         else
             pully.setPosition(1);
         if(gamepad1.x && !reverse)
-            duck.setPosition(1);
+            duck.setPosition(.7);
         else if(gamepad1.x)
-            duck.setPosition(-1);
+            duck.setPosition(-.7);
         else
             duck.setPosition(.5);
 
-        if(gamepad2.b) {
-            intake.setPower(-1);
-            delivery1.setPower(1);
-            delivery2.setPower(-1);
-        }
-        else if(gamepad2.a) {
-            intake.setPower(1);
-            delivery1.setPower(-1);
-            delivery2.setPower(1);
-        }
-        else {
-            intake.setPower(0);
-            delivery1.setPower(0);
-            delivery2.setPower(0);
-        }
-        if(gamepad2.right_trigger > .49)
-            outtake.setPower(1);
-        else if(gamepad2.left_trigger > .49)
-            outtake.setPower(-1);
-        else
-            outtake.setPower(0);
-        if(gamepad2.right_bumper)
-            pully.setPosition(0);
-        else
-            pully.setPosition(1);
+        
 
 
         telemetry.addData("Precision",togglePrecision);
         telemetry.addData("Reverse",reverse);
         //toggles precision mode if the right stick button is pressed
+        //poopoopeepeepoopoopeepee
 
 
         //sets the factor multiplied to the power of the motors

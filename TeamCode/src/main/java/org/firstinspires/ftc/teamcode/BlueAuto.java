@@ -19,12 +19,12 @@ public class BlueAuto extends LinearOpMode{
     @Override
     public void runOpMode() throws InterruptedException {
         initialize();
-        duck.setPosition(1);
-        strafe(-1, 200);
-        drive(-.8, 650);
+        duck.setPosition(.6);
+        strafe(-1, 360);
+        drive(-.6, 900);
         intakeBox();
         duck.setPosition(0.5);
-        strafe(-1, 500);
+        strafe(-1, 700);
         pully.setPosition(1);
 
         /*duck.setPosition(-1);
@@ -121,16 +121,20 @@ public class BlueAuto extends LinearOpMode{
 
     public void intakeBox() throws InterruptedException {
         timer = new ElapsedTime();
+        /*
         intake.setPower(-1);
         delivery1.setPower(1);
         delivery2.setPower(-1);
+        */
         while(timer.milliseconds() <= 5000)
             if (!opModeIsActive()) {
                 throw new InterruptedException();
             }
+        /*
         intake.setPower(0);
         delivery1.setPower(0);
         delivery2.setPower(0);
+        */
     }
 
     public void dropDuck() throws InterruptedException {

@@ -19,16 +19,13 @@ public class RedAuto extends LinearOpMode{
     @Override
     public void runOpMode() throws InterruptedException {
         initialize();
-        drive(1, 200);
-        strafe(-1, 700);
-        raisePully();
-        dropPully();
-        strafe(1, 1100);
-        drive(-1, 300);
-        duck.setPosition(-1);
+        drive(.8, 100);
+        strafe(.6, 1350);
+        duck.setPosition(-.7);
         intakeBox();
         duck.setPosition(0.5);
-        drive(.8, 500);
+        strafe(.8, 100);
+        drive(.8, 350);
 
     }
     //sebby is stronk
@@ -74,7 +71,7 @@ public class RedAuto extends LinearOpMode{
         }
     }
 
-    public void strafe(int direction, int time) throws InterruptedException {
+    public void strafe(double direction, int time) throws InterruptedException {
         timer = new ElapsedTime();
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -114,16 +111,20 @@ public class RedAuto extends LinearOpMode{
 
     public void intakeBox() throws InterruptedException {
         timer = new ElapsedTime();
+        /*
         intake.setPower(-1);
         delivery1.setPower(1);
         delivery2.setPower(-1);
+        */
         while(timer.milliseconds() <= 5000)
             if (!opModeIsActive()) {
                 throw new InterruptedException();
             }
+        /*
         intake.setPower(0);
         delivery1.setPower(0);
         delivery2.setPower(0);
+        */
     }
 
     public void dropDuck() throws InterruptedException {
